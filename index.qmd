@@ -6,3 +6,8 @@ author: "Ananya Saha"
 
 ![](assets/logo/TIE_logo.svg){width=80% fig-align="center"}
 
+
+Winter Semester 2023/24
+
+565376 | Information and communication Systems 
+
