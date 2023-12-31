@@ -1,7 +1,72 @@
 ---
 title: "Statistical Concepts"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+## Assignment
+1. For each variable, the following values are:
+- Expected value
+- Variance
+- Standard deviation
+```{r}
+
+random_vars <- readRDS("data/random_vars.rds")
+
+x1_mean <- mean(random_vars$age)
+x1_var <- var(random_vars$age)
+x1_sd <- sd(random_vars$age)
+x2_mean <- mean(random_vars$income)
+x2_var <- var(random_vars$income)
+x2_sd <- sd(random_vars$income)
+
+# Expected value x1
+print(x1_mean)
+
+# Variance x2
+print(x1_var)
+
+# Standard deviation x1
+print(x1_sd)
+
+# Expected value x2
+print(x2_mean)
+
+# Variance x2
+print(x2_var)
+
+# Standard deviation x2
+print(x2_sd)
+
+```
+2. It makes sense to compare the standard deviations because it measures the dispersion of a random variable, as we see here that the dispersion of the income is larger than that of age.
+
+3. Examining the relationship between both variables and computing
+- Covariance
+- Correlation
+
+```{r}
+covariance <- cov(random_vars$age, random_vars$income)
+correlation <- cor(random_vars$age, random_vars$income)
+cat("Covariance: ", covariance, "\n")
+cat("Correlation: ", correlation, "\n")
+```
+4. Measure that is easier to interpret: Correlation, having values between -1 and +1, is easier. 
+
+5. Computing the conditional expected values: 
+```{r}
+subset_minors <- subset(random_vars, age <= 18)
+subset_adults <- subset(random_vars, age >= 18 & age <= 65)
+subset_seniors <- subset(random_vars, age >= 65)
+mean_minors <- mean(subset_minors$income)
+mean_adults <- mean(subset_adults$income)
+mean_seniors <- mean(subset_seniors$income)
+
+# E[income | age <= 18]
+print(mean_minors)
+
+# E[income | age ∈ [18, 65)]
+print(mean_adults)
+
+# E[income | age >= 65]
+print(mean_seniors)
+```

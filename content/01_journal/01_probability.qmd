@@ -1,97 +1,93 @@
 ---
 title: "Probability Theory"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Probability
 
-This is a `.qmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
+## Assignment I
+Probabilities in terms of the likelihood of events occurring:
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+- P(T): Probability of being on time.
+- P(T'): Probability of not being on time.
+- P(S): Probability of a change in scope.
+- P(S'): Probability of no change in scope.
 
-# Text Formatting
+Probability tree for the events "Being on time (T)" and "Change in scope (S)" along with conditional probabilities:
+```{css}
+           P(S)                                P(S') 
+             |                                   |
+      ______________                      ______________
+     |              |                    |              |
+  P(T|S)        P(T'|S)               P(T|S')       P(T'|S') 
+     |              |                    |              |
+   T ∩ S          T' ∩ S              T ∩ S'         T' ∩ S'
 
-*italics* and **bold**
+```
 
-superscript^2^ / subscript~2~
+- P(T ∩ S) = P(S) × P(T ∣ S)
+- P(T ∩ S') = P(S') × P(T ∣ S')
+- P(T' ∩ S) = P(S) × P(T' ∣ S)
+- P(T' ∩ S') = P(S') × P(T' ∣ S')
 
-~~strikethrough~~
+The probabilities and the sum:
 
-`verbatim code`
+```{r}
+# Assigning given values
+T_S <- 0.2
+T0_S <- 0.8
+T_S0 <- 0.6
+T0_S0 <- 0.4
+S <- 0.3
+S0 <- 0.7
 
-> Blockquote
+# Computing required probabilities
+P_T_S <- T_S * S
+P_T_S0 <- T_S0 * S0
+P_T0_S <- T0_S * S
+P_T0_S0 <- T0_S0 * S0
+P_SUM <- P_T_S + P_T_S0 + P_T0_S + P_T0_S0
 
-# Headings
+print(P_T_S)
+print(P_T_S0)
+print(P_T0_S)
+print(P_T0_S0)
+print(P_SUM)
+```
 
-## Header 2
-### Header 3
-#### Header 4
-##### Header 5
-###### Header 6
+# Set Theory
 
-# Links & Images
-
-<https://quarto.org>
-
-[Quarto](https://quarto.org)
-
-![Caption](../../assets/img/elephant.png)
-
-[![Caption](../../assets/img/elephant.png)](https://quarto.org)
-
-[![Caption](../../assets/img/elephant.png)](https://quarto.org "An elephant")
-
-
-# Lists
-
-* unordered list
-    + sub-item 1
-    + sub-item 2
-        - sub-sub-item 1
-        
-*   item 2
-
-    Continued (indent 4 spaces)
+## Assignment II
+With reference to the given Venn Diagram:
+* What is the percentage of customers using all three devices?
+    + 0,5%
+* What is the percentage of customers using at least two devices?
+    + (0,5 + 3,3 + 7,3 + 8,8)% = 19,9%
+* What is the percentage of customers using only one device?
+    + (100 - 19,9)% = 80,1%
     
-    
-1. ordered list
-2. item 2
-    i) sub-item 1
-         A.  sub-sub-item 1
-         
-(@)  A list whose numbering
+## Assignment III
+To assess the usefulness of the tool in practice we want to know the following probabilities:
 
-continues after
-
-(@)  an interruption
-
-# Tables
-
-| Right | Left | Default | Center |
-|------:|:-----|---------|:------:|
-|   12  |  12  |    12   |    12  |
-|  123  |  123 |   123   |   123  |
-|    1  |    1 |     1   |     1  |
-
-# Source Code
-
-Use ``` to delimit blocks of source code:
-
-```
-code
-```
-
-Add a language to syntax highlight code blocks:
+1. What is the probability that when the alarm is triggered the product is found to be flawless?
+2. What is the probability that when the alarm is triggered the product is found to have flaws?
 
 ```{r}
-1 + 1
-```
+# Assigning given values
+P_BA <- 0.97
+P_BA0 <- 0.01
+P_A <- 0.04
+P_A0 <- 1 - P_A
 
-```{r}
-cars
-```
+# Following Bayes Theorem,
+P_B <- P_BA * P_A + P_BA0 * P_A0
+P_AB <- (P_BA * P_A) / P_B
+P_A0B <- (P_BA0 * P_A0) / P_B
 
-```{r}
-plot(cars)
+# Required answer (1)
+print(P_A0B)
+# Required answer (2)
+print(P_AB)
+
 ```
+These results show that in case the alarm is triggered, there is a possibility of about **19,83%** that the product is flawless and a probability of **80,17%** that the product is faulty.    

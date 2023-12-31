@@ -1,7 +1,72 @@
 ---
 title: "Directed Acyclic Graphs"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+## Assignment
+
+1. DAG from parking-spots example:
+```{r}
+
+library(dagitty)
+library(ggdag)
+library(tidyverse)
+
+con <- dagify(
+  X ~ Z,
+  Y ~ Z,
+  Y ~ X,
+  coords = list(x = c(Y = 3, Z = 2, X = 1),
+                y = c(Y = 0, Z = 1, X = 0)),
+  labels = list(X = "Parking-spot available",
+                Y = "Sales",
+                Z = "Customers")
+)
+
+ggdag(con) +
+  geom_dag_text(color = "white") +
+  geom_dag_edges(edge_color = "white") +
+  geom_dag_label_repel(aes(label = label))
+```
+
+2. Examining the data file customer_sat.rds:
+```{r}
+df <- readRDS("data/customer_sat.rds")
+str(df)
+df
+
+# (1) regress satisfaction on follow_ups
+model1 <- lm(satisfaction ~ follow_ups, data = df)
+summary(model1)
+
+# (2) regress satisfaction on follow_ups and account for subscription
+model2 <- lm(satisfaction ~ follow_ups + subscription, data = df)
+summary(model2)
+```
+
+3. Comparing the coefficients: coefficient for the number of follow-up calls is **negative** which implies that the satisfaction is expected to decrease if the customer receives more calls while that of follow-up calls while accounting for the subscription model is **positive**, implying that satisfaction is expected to increase with the number of calls within a given subscription model.
+
+Perhaps the customer is having problems with more expensive subscription models. 
+
+4. Plotting the data:
+```{r}
+
+sat_not_con <- ggplot(df, aes(x = follow_ups, y = satisfaction)) +
+  geom_point() +
+  stat_smooth(method = "lm", se = F)
+
+sat_con <- ggplot(df, aes(x = follow_ups, y = satisfaction,
+                            color = subscription, 
+                            alpha = subscription)) +
+  geom_point() +
+  stat_smooth(method = "lm", se = F) +
+  scale_color_manual(values = c("Elite" = "red",
+                                "Premium+" = "blue",
+                                "Premium" = "black")) +
+  scale_alpha_manual(values = c("Elite" = 1, "Premium+" = 0.6, "Premium" = 0.2)) +
+  theme(legend.position = "right")
+
+# Displaying both plots
+sat_not_con
+sat_con
+```

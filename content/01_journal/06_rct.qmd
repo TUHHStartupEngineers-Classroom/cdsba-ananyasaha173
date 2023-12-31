@@ -1,7 +1,62 @@
 ---
 title: "Randomized Controlled Trials"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+## Assignment
+1. Checking whether the covariates are balanced across the groups:
+```{r}
+library(dplyr)
+library(ggplot2)
+
+df <- readRDS(("data/abtest_online.rds"))
+
+str(df)
+
+comparedevice <- ggplot(df, aes(x = chatbot, y = after_stat(count), fill = mobile_device)) +
+  stat_count(geom = "bar", position = "dodge") +
+  labs(x = "Chatbot", y = "Number of users", title = "Number of users on mobile devices") +
+  scale_fill_manual(values = c("FALSE" = "blue", "TRUE" = "red")) +
+  theme_minimal()
+
+compareprevious <- 
+  ggplot(df, 
+         aes(x = chatbot, 
+             y = previous_visit, 
+             color = as.factor(chatbot))) +
+  stat_summary(geom = "errorbar", 
+               width = .5,
+               fun.data = "mean_se", 
+               fun.args = list(mult=1.96),
+               show.legend = F) +
+  labs(x = NULL, y = "Previous visits", title = "Difference in previous visits")
+
+# Plotting for reference
+comparedevice
+compareprevious
+
+mean_previousvisits <- df %>%
+  group_by(chatbot) %>%
+  summarize(mean_previousvisits = mean(previous_visit))
+print(mean_previousvisits)
+```
+
+2. Running a regression to find the effect of chatbot on sales:
+```{r}
+
+model_purchase_amount <- lm(purchase_amount ~ chatbot, data = df)
+summary(model_purchase_amount)
+```
+
+3. Computing a CATE for one exemplary group:
+```{r}
+model_purchase_mobile <- lm(purchase_amount ~ chatbot * mobile_device, data = df)
+summary(model_purchase_mobile)
+```
+
+4. Performing Logistic Regression for coefficient of Chatbot:
+```{r}
+model_purchase <- glm(purchase ~ chatbot, family=binomial(link='logit'), data = df)
+summary(model_purchase)
+
+```

@@ -1,7 +1,41 @@
 ---
 title: "Difference-in-Differences"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+## Assignment
+
+1. Manually computing the mean satisfaction for treated and control hospitals, before and after the treatment:
+```{r}
+library(tidyverse)
+df <- readRDS("data/hospdd.rds")
+str(df)
+
+new_procedure_hospitals <- unique(df$hospital[df$procedure == 1])
+new_procedure_hospitals
+
+# satisfaction for treated hospitals before and after the treatment
+treated_data <- df %>% filter(hospital %in% new_procedure_hospitals)
+mean_satisfaction_treated_before <- treated_data %>% filter(month == 3) %>% summarise(mean_satisfaction = mean(satis, na.rm = TRUE)) %>% pull(mean_satisfaction)
+mean_satisfaction_treated_after <- treated_data %>% filter(month == 4) %>% summarise(mean_satisfaction = mean(satis, na.rm = TRUE)) %>% pull(mean_satisfaction)
+
+# satisfaction for control hospitals before and after the treatment
+control_data <- df %>% filter(!hospital %in% new_procedure_hospitals)
+mean_satisfaction_control_before <- control_data %>% filter(month == 3) %>% summarise(mean_satisfaction = mean(satis, na.rm = TRUE)) %>% pull(mean_satisfaction)
+mean_satisfaction_control_after <- control_data %>% filter(month == 4) %>% summarise(mean_satisfaction = mean(satis, na.rm = TRUE)) %>% pull(mean_satisfaction)
+
+DiD_estimate_before <- mean_satisfaction_treated_before - mean_satisfaction_control_before
+DiD_estimate_after <- mean_satisfaction_treated_after - mean_satisfaction_control_after
+DiD <- DiD_estimate_after - DiD_estimate_before
+cat("Estimated DiD: ", DiD)
+```
+
+2. Using a linear regression to compute the estimate. Including group and time fixed effects in the regression, i.e. one regressor for each month and one regressor for each hospital: 
+```{r}
+model_01 <- lm(satis ~ procedure + month + hospital, data = df)
+summary(model_01)
+
+model_02 <- lm(satis ~ procedure + as.factor(month) + as.factor(hospital), data = df)
+summary(model_02)
+```
+Explanation: Besides other visible differences between each month and hospital, the major difference is that when it is included as a factor each value becomes a category.

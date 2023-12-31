@@ -1,7 +1,121 @@
 ---
 title: "Regression Discontinuity"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+## Assignment
+
+1. Checking how sensitive the result is to changing the bandwidth by running the analysis
+- with half the bandwidth
+- with double the bandwidth
+
+```{r}
+library(estimatr)
+library(ggdag)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+
+df <- readRDS("data/coupon.rds")
+df
+
+# Results with half the bandwidth
+
+c0 <- 60
+bw <- c0 + c(-2.5, 2.5)
+
+df_bw_below <- df %>% filter(days_since_last >= bw[1] & days_since_last < c0)
+df_bw_above <- df %>% filter(days_since_last >= c0 & days_since_last <= bw[2])
+
+model_bw_below <- lm(purchase_after ~ days_since_last, df_bw_below)
+model_bw_above <- lm(purchase_after ~ days_since_last, df_bw_above)
+
+y0 <- predict(model_bw_below, tibble(days_since_last = c0))
+y1 <- predict(model_bw_above, tibble(days_since_last = c0))
+
+late <- y1 - y0
+sprintf("LATE: %.2f", late)
+
+df_bw <- bind_rows(df_bw_above, df_bw_below)
+min_y <- min(df_bw$purchase_after)
+max_y <- max(df_bw$purchase_after)
+
+dep_var_bw <- 
+  ggplot(df_bw, aes(x = days_since_last, y = purchase_after, color = coupon)) +
+  geom_vline(xintercept = c0, color = "blue", linewidth = 2) +
+  geom_point(alpha = 0.4, size = 1) +
+  geom_smooth(data = df_bw_below, method = "lm", se = F, linewidth = 2) +
+  geom_smooth(data = df_bw_above, method = "lm", se = F, linewidth = 2) +
+  geom_segment(aes(x = c0, xend = bw[2], y = y0, yend = y0),
+               linetype = "dotted", color = "red") +
+  geom_segment(aes(x = bw[1], xend = c0, y = y1, yend = y1),
+               linetype = "dotted", color = "red") +
+  annotate("text", x = c0+2, y = mean(c(y1, y0)-2),
+           label = sprintf("Difference: %.2f", (y1 - y0)),
+           color = "green", fontface = 2) +
+  scale_y_continuous(limits = c(min_y, max_y)) + 
+  scale_color_discrete(labels = c("No coupon", "Coupon")) +
+  xlab("No. of days since last purchase") +
+  ylab("Purchase after coupon assignment") +
+  theme(legend.title = element_blank())
+dep_var_bw
+```
+The results do not appear to be very sensitive to a reduction in the bandwidth. 
+
+```{r}
+
+# Results with twice the bandwidth
+
+c0 <- 60
+bw <- c0 + c(-10, 10)
+
+df_bw_below <- df %>% filter(days_since_last >= bw[1] & days_since_last < c0)
+df_bw_above <- df %>% filter(days_since_last >= c0 & days_since_last <= bw[2])
+
+model_bw_below <- lm(purchase_after ~ days_since_last, df_bw_below)
+model_bw_above <- lm(purchase_after ~ days_since_last, df_bw_above)
+
+y0 <- predict(model_bw_below, tibble(days_since_last = c0))
+y1 <- predict(model_bw_above, tibble(days_since_last = c0))
+
+late <- y1 - y0
+sprintf("LATE: %.2f", late)
+
+df_bw <- bind_rows(df_bw_above, df_bw_below)
+min_y <- min(df_bw$purchase_after)
+max_y <- max(df_bw$purchase_after)
+
+dep_var_bw <- 
+  ggplot(df_bw, aes(x = days_since_last, y = purchase_after, color = coupon)) +
+  geom_vline(xintercept = c0, color = "blue", linewidth = 2) +
+  geom_point(alpha = 0.4, size = 1) +
+  geom_smooth(data = df_bw_below, method = "lm", se = F, linewidth = 2) +
+  geom_smooth(data = df_bw_above, method = "lm", se = F, linewidth = 2) +
+  geom_segment(aes(x = c0, xend = bw[2], y = y0, yend = y0),
+               linetype = "dotted", color = "red") +
+  geom_segment(aes(x = bw[1], xend = c0, y = y1, yend = y1),
+               linetype = "dotted", color = "red") +
+  annotate("text", x = c0+2, y = mean(c(y1, y0)-2),
+           label = sprintf("Difference: %.2f", (y1 - y0)),
+           color = "green", fontface = 2) +
+  scale_y_continuous(limits = c(min_y, max_y)) + 
+  scale_color_discrete(labels = c("No coupon", "Coupon")) +
+  xlab("No. of days since last purchase") +
+  ylab("Purchase after coupon assignment") +
+  theme(legend.title = element_blank())
+dep_var_bw
+```
+
+3. Using a plot
+```{r}
+df <- readRDS("data/shipping.rds")
+df
+
+ggplot(df, aes(x = purchase_amount)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") +
+  geom_vline(xintercept = 30, linetype = "dashed", color = "red", linewidth = 1) +
+  labs(title = "Distribution of purchase amounts with cut-off at 30€",
+       x = "Purchase amount (€)",
+       y = "Frequency") +
+  theme_minimal()
+```

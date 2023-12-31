@@ -1,7 +1,48 @@
 ---
 title: "Regression and Statistical Inference"
+author: "Ananya Saha"
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+## Assignment
+1. Checking the Dimensions:
+```{r}
+df <- readRDS("data/car_prices.rds")
+cat("The dimensions are ", dim(df), "\n")
+```
+
+2. Detailed look at the Data types:
+```{r}
+str(df)
+```
+Data types: Numbers and Strings
+
+Numbers have decimal or float numbers and are different from Strings which can contain alphabets alone, or alphanumeric or special characters and must be within quotes.
+
+3. Linear regression to determine factors relevant for the pricing of a car:
+```{r}
+
+model <- lm(price ~., data = df)
+summary(model)
+
+min_rpm <- min(df$peakrpm)
+max_rpm <- max(df$peakrpm)
+```
+
+4. Regressor chosen - peakrpm:
+- The attribute "peakrpm" is numeric and takes values between 4200 and 6600.
+- Peak RPM means the maximum revolutions the car's engine will be able to perform per minute.
+The coefficient estimate is positive and the effect on its price increases when peakrpm increases.
+- Yes, its effect is statistically significant and is indicated by the p-value. Since the p-value is small, that implies a high statistical significance.
+
+5. Regression after adding a new variable:
+```{r}
+library(tidyverse)
+df <- df %>%
+  mutate(seat_heating = TRUE)
+
+summary(df)
+
+model <- lm(price ~., data = df)
+summary(model)
+```
+Coefficient for the new variable seat_heating: the model matrix will become singular as all values are TRUE and constant, thus resulting in an error.

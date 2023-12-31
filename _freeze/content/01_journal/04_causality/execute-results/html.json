@@ -1,0 +1,18 @@
+{
+  "hash": "4d0f7e57bef29d94dc0b383ae875b430",
+  "result": {
+    "markdown": "---\ntitle: \"Causality\"\nauthor: \"Ananya Saha\"\n---\n\n# Spurious correlation\n## Assignment\n\nExample: Number of people who drowned by falling into the pool\n\n::: {.cell hash='04_causality_cache/html/unnamed-chunk-1_6afdfeba941675b07c3891438cd690d4'}\n\n```{.r .cell-code}\n# https://tylervigen.com/spurious-correlations : data source\n\nyear <- c(1999:2009)\nfilms <- c(2, 2, 2, 3, 1, 1, 2, 3, 4, 1, 4)\ndrownings <- c(109, 102, 102, 98, 85, 95, 96, 98, 123, 94, 102)\ndrownings <- drownings / 10 # for better visibility on graph\n\ndf <- data.frame(year, films, drownings)\n\nlibrary(ggplot2)\n\nggplot(df, aes(x = year)) + \n  geom_line(aes(y = films, color = \"Films Nicolas Cage appeared in\")) +\n  geom_line(aes(y = drownings, color = \"Drownings\")) +\n  labs(title = \"Number of people who drowned by falling into the pool\",\n       x = \"Year\",\n       y = \"Drownings\") +\n  scale_color_manual(values = c(\"Films Nicolas Cage appeared in\" = \"black\", \"Drownings\" = \"red\")) +\n  theme_minimal()\n```\n\n::: {.cell-output-display}\n![](04_causality_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-in-header": [
+        "<link href=\"../../site_libs/pagedtable-1.1/css/pagedtable.css\" rel=\"stylesheet\" />\r\n<script src=\"../../site_libs/pagedtable-1.1/js/pagedtable.js\"></script>\r\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
